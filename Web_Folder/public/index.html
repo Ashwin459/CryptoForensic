@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CFT Verification Portal</title>
+    <style>
+        /* Modern Color Palette */
+        :root {
+            --primary: #0f172a;       /* Dark Slate */
+            --bg-color: #f1f5f9;      /* Light Gray Background */
+            
+            --success-bg: #dcfce7;    /* Light Green */
+            --success-text: #166534;  /* Dark Green */
+            --success-border: #22c55e;
+            
+            --error-bg: #fee2e2;      /* Light Red */
+            --error-text: #991b1b;    /* Dark Red */
+            --error-border: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Section */
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Content Section */
+        .content {
+            padding: 30px;
+        }
+
+        /* Status Badge Styling */
+        .status-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: 16px;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        /* VALID STATE (Green) */
+        .valid {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border: 2px solid var(--success-border);
+            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.2);
+        }
+
+        /* INVALID STATE (Red) */
+        .invalid {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            border: 2px solid var(--error-border);
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Details Table */
+        .details-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .value {
+            color: #1e293b;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .hidden { display: none; }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>Crypto Forensics</h1>
+        <p>Document Verification</p>
+    </div>
+
+    <div class="content">
+        <div id="loading">
+            <div class="loader"></div>
+            <p style="text-align:center; color: #64748b; font-weight: 500;">Verifying Blockchain Record...</p>
+        </div>
+
+        <div id="result" class="hidden">
+            
+            <div class="status-container">
+                <div id="status-badge" class="status-badge">
+                    </div>
+            </div>
+
+            <div id="details-container" class="hidden details-box">
+                <div class="detail-row"><span class="label">Reference No.</span> <span class="value" id="d-ref"></span></div>
+                <div class="detail-row"><span class="label">Issued To</span> <span class="value" id="d-name"></span></div>
+                <div class="detail-row"><span class="label">Purpose</span> <span class="value" id="d-purpose"></span></div>
+                <div class="detail-row"><span class="label">Date Issued</span> <span class="value" id="d-issue"></span></div>
+                <div class="detail-row"><span class="label">Valid Until</span> <span class="value" id="d-expiry"></span></div>
+            </div>
+
+            <div id="error-msg" class="hidden" style="margin-top: 20px; text-align: center; color: #ef4444; font-weight: 600;"></div>
+        </div>
+
+        <div class="footer">
+            SECURE VERIFICATION SYSTEM &copy; 2025
+        </div>
+    </div>
+</div>
+
+<script>
+    async function verify() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+
+        if (!id) {
+            showError("No Document ID detected in URL.");
+            return;
+        }
+
+        try {
+            // Fetch from your Vercel API
+            const response = await fetch(`/api/verify?id=${id}`);
+            const data = await response.json();
+
+            if (!data.document) {
+                showError("Document Not Found in Official Registry.");
+                return;
+            }
+
+            const doc = data.document;
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Date Comparison
+            if (today > doc.expiry_date) {
+                // EXPIRED -> RED UI
+                showError(`This document EXPIRED on ${doc.expiry_date}`, doc);
+            } else {
+                // VALID -> GREEN UI
+                showSuccess(doc);
+            }
+
+        } catch (err) {
+            console.error(err);
+            showError("Network Connection Failed. Please reload.");
+        }
+    }
+
+    function showSuccess(doc) {
+        hideLoader();
+        
+        // 1. Set Badge to Green
+        const badge = document.getElementById('status-badge');
+        badge.className = "status-badge valid";
+        badge.innerHTML = `
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            OFFICIALLY VALID
+        `;
+
+        // 2. Fill Details
+        fillDetails(doc);
+    }
+
+    function showError(msg, doc = null) {
+        hideLoader();
+
+        // 1. Set Badge to Red
+        const badge = document.getElementById('status-badge');
+        badge.className = "status-badge invalid";
+        badge.innerHTML = `
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+            INVALID / EXPIRED
+        `;
+
+        // 2. Show Error Text
+        const errorText = document.getElementById('error-msg');
+        errorText.innerText = msg;
+        errorText.classList.remove('hidden');
+
+        // 3. If we have doc data (even if expired), show it
+        if (doc) {
+            fillDetails(doc);
+        }
+    }
+
+    function fillDetails(doc) {
+        const container = document.getElementById('details-container');
+        container.classList.remove('hidden');
+        
+        document.getElementById('d-ref').innerText = doc.ref_no;
+        document.getElementById('d-name').innerText = doc.issued_to;
+        document.getElementById('d-purpose').innerText = doc.purpose;
+        document.getElementById('d-issue').innerText = doc.issue_date;
+        document.getElementById('d-expiry').innerText = doc.expiry_date;
+    }
+
+    function hideLoader() {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('result').classList.remove('hidden');
+    }
+
+    // Start
+    verify();
+</script>
+
+</body>
+</html>
