@@ -5,22 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CFT Verification Portal</title>
     <style>
-        /* Modern Color Palette */
         :root {
-            --primary: #0f172a;       /* Dark Slate */
-            --bg-color: #f1f5f9;      /* Light Gray Background */
-            
-            --success-bg: #dcfce7;    /* Light Green */
-            --success-text: #166534;  /* Dark Green */
-            --success-border: #22c55e;
-            
-            --error-bg: #fee2e2;      /* Light Red */
-            --error-text: #991b1b;    /* Dark Red */
-            --error-border: #ef4444;
+            --bg-color: #f8f9fa;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             display: flex;
             justify-content: center;
@@ -33,49 +24,44 @@
         .card {
             background: white;
             width: 100%;
-            max-width: 480px;
-            border-radius: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
             overflow: hidden;
-            animation: fadeIn 0.5s ease-out;
+            border: 1px solid #eee;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Header Section */
+        /* --- THEME HEADER (GRADIENT) --- */
         .header {
-            background: var(--primary);
+            background: linear-gradient(135deg, #4b36cc 0%, #b030b0 100%);
             color: white;
-            padding: 40px 30px;
+            padding: 40px 20px;
             text-align: center;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
-            letter-spacing: 1px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .header p {
             margin: 8px 0 0;
-            color: #94a3b8;
+            opacity: 0.9;
             font-size: 13px;
             font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
         }
 
-        /* Content Section */
+        /* CONTENT */
         .content {
             padding: 30px;
         }
 
-        /* Status Badge Styling */
+        /* STATUS BADGES */
         .status-container {
             text-align: center;
             margin-bottom: 30px;
@@ -86,35 +72,30 @@
             align-items: center;
             justify-content: center;
             padding: 12px 24px;
-            border-radius: 99px;
+            border-radius: 50px;
             font-weight: 700;
             font-size: 16px;
             gap: 10px;
-            transition: all 0.3s ease;
         }
 
-        /* VALID STATE (Green) */
         .valid {
-            background-color: var(--success-bg);
-            color: var(--success-text);
-            border: 2px solid var(--success-border);
-            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.2);
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #22c55e;
         }
 
-        /* INVALID STATE (Red) */
         .invalid {
-            background-color: var(--error-bg);
-            color: var(--error-text);
-            border: 2px solid var(--error-border);
-            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
         }
 
-        /* Details Table */
+        /* DETAILS TABLE */
         .details-box {
             background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 20px;
+            border: 1px solid #e2e8f0;
         }
 
         .detail-row {
@@ -142,27 +123,27 @@
             text-align: right;
         }
 
-        /* Loading Spinner */
+        /* LOADING */
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
+            border-top: 4px solid #4b36cc;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 40px auto;
+            margin: 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .hidden { display: none; }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 25px;
             text-align: center;
             font-size: 12px;
             color: #94a3b8;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
         }
     </style>
 </head>
@@ -170,25 +151,25 @@
 
 <div class="card">
     <div class="header">
-        <h1>Crypto Forensics</h1>
-        <p>Document Verification</p>
+        <h1>Crypto Forensic Technology</h1>
+        <p>Document Verification System</p>
     </div>
 
     <div class="content">
         <div id="loading">
             <div class="loader"></div>
-            <p style="text-align:center; color: #64748b; font-weight: 500;">Verifying Blockchain Record...</p>
+            <p style="text-align:center; color: #64748b; font-weight: 500;">Searching Registry...</p>
         </div>
 
         <div id="result" class="hidden">
             
             <div class="status-container">
-                <div id="status-badge" class="status-badge">
-                    </div>
+                <div id="status-badge" class="status-badge"></div>
             </div>
 
             <div id="details-container" class="hidden details-box">
                 <div class="detail-row"><span class="label">Reference No.</span> <span class="value" id="d-ref"></span></div>
+                <div class="detail-row"><span class="label">Document Type</span> <span class="value" id="d-type" style="color:#4b36cc;"></span></div>
                 <div class="detail-row"><span class="label">Issued To</span> <span class="value" id="d-name"></span></div>
                 <div class="detail-row"><span class="label">Purpose</span> <span class="value" id="d-purpose"></span></div>
                 <div class="detail-row"><span class="label">Date Issued</span> <span class="value" id="d-issue"></span></div>
@@ -199,7 +180,7 @@
         </div>
 
         <div class="footer">
-            SECURE VERIFICATION SYSTEM &copy; 2025
+            SECURE VERIFICATION SYSTEM &copy; 2026
         </div>
     </div>
 </div>
@@ -215,7 +196,7 @@
         }
 
         try {
-            // Fetch from your Vercel API
+            // CALL YOUR API
             const response = await fetch(`/api/verify?id=${id}`);
             const data = await response.json();
 
@@ -225,15 +206,23 @@
             }
 
             const doc = data.document;
-            const today = new Date().toISOString().split('T')[0];
             
-            // Date Comparison
-            if (today > doc.expiry_date) {
-                // EXPIRED -> RED UI
-                showError(`This document EXPIRED on ${doc.expiry_date}`, doc);
+            // --- DATE CHECK LOGIC (DD-MM-YYYY) ---
+            if (doc.expiry_date.includes("Lifetime") || doc.expiry_date.includes("N/A")) {
+                showSuccess(doc); // Always valid
             } else {
-                // VALID -> GREEN UI
-                showSuccess(doc);
+                // Parse "DD-MM-YYYY" manually
+                const parts = doc.expiry_date.split('-');
+                // Create Date object (yyyy, mm-1, dd)
+                const expDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                const today = new Date();
+                today.setHours(0,0,0,0);
+
+                if (today > expDate) {
+                    showError(`This document EXPIRED on ${doc.expiry_date}`, doc);
+                } else {
+                    showSuccess(doc);
+                }
             }
 
         } catch (err) {
@@ -245,7 +234,6 @@
     function showSuccess(doc) {
         hideLoader();
         
-        // 1. Set Badge to Green
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge valid";
         badge.innerHTML = `
@@ -253,14 +241,12 @@
             OFFICIALLY VALID
         `;
 
-        // 2. Fill Details
         fillDetails(doc);
     }
 
     function showError(msg, doc = null) {
         hideLoader();
 
-        // 1. Set Badge to Red
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge invalid";
         badge.innerHTML = `
@@ -268,12 +254,10 @@
             INVALID / EXPIRED
         `;
 
-        // 2. Show Error Text
         const errorText = document.getElementById('error-msg');
         errorText.innerText = msg;
         errorText.classList.remove('hidden');
 
-        // 3. If we have doc data (even if expired), show it
         if (doc) {
             fillDetails(doc);
         }
@@ -283,11 +267,12 @@
         const container = document.getElementById('details-container');
         container.classList.remove('hidden');
         
-        document.getElementById('d-ref').innerText = doc.ref_no;
-        document.getElementById('d-name').innerText = doc.issued_to;
-        document.getElementById('d-purpose').innerText = doc.purpose;
-        document.getElementById('d-issue').innerText = doc.issue_date;
-        document.getElementById('d-expiry').innerText = doc.expiry_date;
+        document.getElementById('d-ref').innerText = doc.ref_no || "N/A";
+        document.getElementById('d-type').innerText = (doc.type || "Document").toUpperCase(); // Show Type
+        document.getElementById('d-name').innerText = doc.issued_to || "N/A";
+        document.getElementById('d-purpose').innerText = doc.purpose || "N/A";
+        document.getElementById('d-issue').innerText = doc.issue_date || "N/A";
+        document.getElementById('d-expiry').innerText = doc.expiry_date || "N/A";
     }
 
     function hideLoader() {
