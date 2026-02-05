@@ -186,7 +186,7 @@
         }
         .copy-btn:hover { background: var(--bg-color); color: var(--accent-gold); border-color: var(--accent-gold); }
 
-        /* FOOTER & CONTACT */
+        /* FOOTER */
         .corporate-footer {
             margin-top: 30px; padding-top: 20px;
             border-top: 1px solid var(--border-color);
@@ -210,7 +210,7 @@
         .contact-item a:hover { color: var(--accent-gold); }
 
         .app-footer { margin-top: 20px; text-align: center; font-size: 10px; color: var(--text-secondary); opacity: 0.6; }
-       
+        .easter-egg { font-size: 8px; opacity: 0.1; margin-top: 5px; color: var(--text-primary); }
         .hidden { display: none !important; }
 
         /* MOBILE ADJUSTMENTS */
@@ -220,24 +220,15 @@
             .value { text-align: left; }
             .trust-strip { font-size: 9px; gap: 10px; }
 
-            /* --- FIXED MOBILE CONTACT LAYOUT --- */
-            /* 2 Columns: Phone | Email */
-            /* 1 Column: Website (Centered below) */
             .contact-grid {
                 display: grid;
-                grid-template-columns: 1fr 1fr; /* Two equal columns */
-                gap: 10px;
-                padding: 12px;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px; padding: 12px;
             }
             .contact-item {
-                justify-content: center; /* Center content in grid cell */
-                font-size: 11px;
-                white-space: nowrap; /* Prevent breaking phone/email */
+                justify-content: center; font-size: 11px; white-space: nowrap;
             }
-            /* The 3rd item (Website) spans both columns to sit in the middle */
-            .contact-item:nth-child(3) {
-                grid-column: span 2;
-            }
+            .contact-item:nth-child(3) { grid-column: span 2; }
         }
 
         /* PRINT */
@@ -306,7 +297,7 @@
             <div class="corp-name">Legal Data Forensic Private Limited</div>
             <div class="corp-cin">CIN: U62099PN2026PTC251352</div>
             <div class="corp-address">
-                <a href="https://maps.app.goo.gl/C9GNUQWuxqrcpCBm8">
+                <a href="https://share.google/YmIDLajzJbFyWjYQ7" target="_blank">
                     📍 Chhatrapati Square, Nagpur, Maharashtra
                 </a>
             </div>
@@ -320,7 +311,7 @@
 
         <div class="app-footer">
             <p>SECURE FORENSIC DATA SYSTEM © 2026</p>
-           
+            <p class="easter-egg">Made by Ashwin and Laxmikant</p>
         </div>
     </div>
 </div>
@@ -359,7 +350,7 @@
         if (!id) { showError("ERR_NO_ID: No Document Identification detected."); return; }
 
         const loadingText = document.getElementById('loading-text');
-        const stages = ["CHECKING REGISTRY...", "VERIFYING HASH...", "ANALYZING INTEGRITY...", "FINALIZING..."];
+        const stages = ["CONNECTING TO REGISTRY...", "VERIFYING SERVER SIGNATURE...", "AUDITING INTEGRITY...", "FINALIZING..."];
         let step = 0;
         
         const scanInterval = setInterval(() => {
@@ -375,23 +366,20 @@
             clearInterval(scanInterval);
             const data = await response.json();
 
-            if (!data.document) { showError("ERR_NOT_FOUND: Document absent from official registry."); return; }
+            if (!data.document && !data.status) { 
+                showError("ERR_NOT_FOUND: Document absent from official registry."); 
+                return; 
+            }
 
             const doc = data.document;
             
-            if (doc.expiry_date.includes("Lifetime") || doc.expiry_date.includes("N/A")) {
+            // --- SECURITY UPGRADE: USE SERVER STATUS ---
+            if (data.status === "VALID") {
                 showSuccess(doc);
             } else {
-                const parts = doc.expiry_date.split('-');
-                const expDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                const today = new Date(); today.setHours(0,0,0,0);
-
-                if (today > expDate) {
-                    showError(`EXPIRED ON ${doc.expiry_date}`, doc);
-                } else {
-                    showSuccess(doc);
-                }
+                showError(data.message, doc); // Server says EXPIRED
             }
+
         } catch (err) {
             clearInterval(scanInterval);
             console.error(err);
