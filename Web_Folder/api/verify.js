@@ -1,25 +1,27 @@
 import { MongoClient } from 'mongodb';
+import crypto from 'crypto'; // Required for hashing
 
-// We cache the client to prevent reconnecting on every request (Vercel optimization)
+// We cache the client to prevent reconnecting on every request
 let cachedClient = null;
 let cachedDb = null;
+
+// --- CONFIGURATION ---
+// Ideally, put this in Vercel Environment Variables as MONGODB_URI
+// For now, we use the direct string to ensure it works immediately for you.
+const MONGODB_URI = "mongodb+srv://vigilantdavinci3_db_user:yv0ETuiPhwtmPgCj@cft.rakztun.mongodb.net/?appName=CFT";
 
 async function connectToDatabase() {
     if (cachedClient && cachedDb) {
         return { client: cachedClient, db: cachedDb };
     }
 
-    // Get the URI from Vercel Environment Variables
-    const uri = process.env.MONGODB_URI;
-
-    if (!uri) {
-        throw new Error('Please define the MONGODB_URI environment variable inside Vercel');
+    if (!MONGODB_URI) {
+        throw new Error('Define the MONGODB_URI string');
     }
 
-    const client = new MongoClient(uri);
+    const client = new MongoClient(MONGODB_URI);
     await client.connect();
 
-    // IMPORTANT: Using 'cft_db' to match the Python App
     const db = client.db('cft_db');
 
     cachedClient = client;
@@ -29,7 +31,7 @@ async function connectToDatabase() {
 }
 
 export default async function handler(req, res) {
-    // Enable CORS so the HTML page can read this data
+    // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -41,6 +43,7 @@ export default async function handler(req, res) {
 
     const { id } = req.query;
 
+    // 1. Basic Input Validation
     if (!id) {
         return res.status(400).json({ error: "Missing Document ID" });
     }
@@ -48,11 +51,74 @@ export default async function handler(req, res) {
     try {
         const { db } = await connectToDatabase();
         const collection = db.collection('assurance_letters');
+        const logs = db.collection('verification_audit_logs'); // NEW: Audit Log Collection
 
-        // Find the document by the unique internal_id
+        // 2. Fetch Document
         const doc = await collection.findOne({ internal_id: id });
 
-        return res.status(200).json({ document: doc });
+        // --- SECURITY CHECK 1: DOCUMENT EXISTENCE ---
+        if (!doc) {
+            // Log the failed attempt
+            await logs.insertOne({
+                timestamp: new Date(),
+                ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+                attempted_id: id,
+                status: "FAILED_NOT_FOUND",
+                user_agent: req.headers['user-agent']
+            });
+            return res.status(404).json({ error: "Document not found in registry" });
+        }
+
+        // --- SECURITY CHECK 2: SERVER-SIDE EXPIRY ---
+        let status = "VALID";
+        let message = "Document is active and authentic.";
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize today to midnight
+
+        // Check if expiry is NOT "Lifetime" and NOT "N/A"
+        if (doc.expiry_date && !doc.expiry_date.includes("Lifetime") && !doc.expiry_date.includes("N/A")) {
+            // Parse "DD-MM-YYYY" from the database
+            const parts = doc.expiry_date.split('-');
+            if (parts.length === 3) {
+                // new Date(year, monthIndex, day)
+                const expDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                
+                if (today > expDate) {
+                    status = "EXPIRED";
+                    message = `This document expired on ${doc.expiry_date}`;
+                }
+            }
+        }
+
+        // --- SECURITY CHECK 3: INTEGRITY HASHING ---
+        // Create a unique fingerprint of the data. If DB data changes, hash changes.
+        const recordString = `${doc.ref_no}|${doc.issued_to}|${doc.issue_date}|${doc.expiry_date}`;
+        const integrityHash = crypto.createHash('sha256').update(recordString).digest('hex');
+
+        // --- SECURITY CHECK 4: AUDIT LOGGING ---
+        // Log the successful lookup (even if expired, we log that it was found)
+        await logs.insertOne({
+            timestamp: new Date(),
+            ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+            document_ref: doc.ref_no,
+            result_status: status, // Logs "VALID" or "EXPIRED"
+            user_agent: req.headers['user-agent']
+        });
+
+        // 5. Return Response (Backend is the Authority)
+        return res.status(200).json({
+            status: status,       // Frontend blindly obeys this
+            message: message,     // Frontend displays this
+            integrity_hash: integrityHash, // Proof of integrity
+            document: {
+                ref_no: doc.ref_no,
+                type: doc.type || "Document",
+                issued_to: doc.issued_to,
+                purpose: doc.purpose,
+                issue_date: doc.issue_date,
+                expiry_date: doc.expiry_date
+            }
+        });
 
     } catch (error) {
         console.error("Database Error:", error);
