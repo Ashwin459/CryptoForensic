@@ -15,8 +15,6 @@
     <meta property="og:image" content="https://your-project.vercel.app/forensic_logo.png">
     <meta property="og:url" content="https://your-project.vercel.app">
     <meta name="theme-color" content="#b8860b">
-    
-
 
     <style>
         /* --- THEME VARIABLES --- */
@@ -26,7 +24,7 @@
             --text-primary: #1a1a1a;
             --text-secondary: #555555;
             --accent-red: #c70000;
-            --accent-gold: #b8860b; /* Antique Gold */
+            --accent-gold: #b8860b; 
             --border-color: #e0e0e0;
             --header-bg: linear-gradient(135deg, #000000 0%, #5a0000 100%);
             --card-shadow: 0 15px 35px rgba(0,0,0,0.1);
@@ -44,7 +42,7 @@
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
             --accent-red: #ff3333;
-            --accent-gold: #ffd700; /* Metallic Gold */
+            --accent-gold: #ffd700; 
             --border-color: #333333;
             --header-bg: linear-gradient(135deg, #000000 0%, #3a0000 100%);
             --card-shadow: 0 15px 35px rgba(0,0,0,0.6);
@@ -74,7 +72,7 @@
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828 1.415 1.415L8.2 0H5.373zM60 5.373l-.828-.83-1.415 1.415L60 8.2V5.373zM0 5.373l.828-.83 1.415 1.415L0 8.2V5.373zM0 54.627l.828.83 1.415-1.415L0 51.8v2.827zM60 54.627l-.828.83-1.415-1.415L60 51.8v2.827zM5.373 60l-.83-.828 1.415-1.415L8.2 60H5.373zM54.627 60l.83-.828-1.415-1.415L51.8 60h2.827z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E");
         }
 
-        /* --- THEME TOGGLE (Fixed Mobile) --- */
+        /* --- THEME TOGGLE --- */
         .theme-toggle-btn {
             position: fixed; top: 20px; right: 20px; z-index: 9999;
             background: var(--card-bg); border: 2px solid var(--border-color);
@@ -90,7 +88,7 @@
             position: relative; z-index: 1;
         }
 
-        /* --- HEADER & TRUST STRIP --- */
+        /* --- HEADER --- */
         .header {
             background: var(--header-bg); color: white;
             padding: 30px 20px 25px; text-align: center;
@@ -107,8 +105,7 @@
 
         /* TRUST STRIP */
         .trust-strip {
-            background: var(--trust-strip-bg);
-            color: var(--trust-text);
+            background: var(--trust-strip-bg); color: var(--trust-text);
             font-size: 10px; font-weight: 600; text-transform: uppercase;
             letter-spacing: 0.5px; padding: 8px; text-align: center;
             border-bottom: 1px solid var(--border-color);
@@ -118,7 +115,7 @@
 
         .content { padding: 30px; }
 
-        /* --- FORENSIC LOADING --- */
+        /* LOADING */
         #loading { display: flex; flex-direction: column; align-items: center; }
         .loader {
             border: 3px solid rgba(128, 128, 128, 0.1);
@@ -129,7 +126,7 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         #loading-text { font-family: 'Consolas', monospace; color: var(--text-secondary); font-size: 13px; letter-spacing: 1px; }
 
-        /* --- RESULT AREA --- */
+        /* RESULT */
         .status-container { text-align: center; margin-bottom: 20px; }
         .status-badge {
             display: inline-flex; align-items: center; justify-content: center;
@@ -140,13 +137,9 @@
         }
         .valid { background-color: var(--valid-bg); color: var(--accent-gold); border: 2px solid var(--accent-gold); }
         .invalid { background-color: var(--invalid-bg); color: var(--accent-red); border: 2px solid var(--accent-red); }
+        .status-explanation { font-size: 13px; color: var(--text-secondary); margin-top: 10px; line-height: 1.4; padding: 0 10px; }
 
-        .status-explanation {
-            font-size: 13px; color: var(--text-secondary); margin-top: 10px;
-            line-height: 1.4; padding: 0 10px;
-        }
-
-        /* --- DETAILS BOX --- */
+        /* DETAILS BOX */
         .details-box {
             background: rgba(128, 128, 128, 0.03);
             border-radius: 6px; padding: 25px;
@@ -160,15 +153,12 @@
         .details-box::before { top: 4px; left: 4px; border-bottom: none; border-right: none; }
         .details-box::after { bottom: 4px; right: 4px; border-top: none; border-left: none; }
 
-        /* DIGITAL STAMP */
         .digital-stamp {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
-            border: 3px solid var(--stamp-color);
-            color: var(--stamp-color);
-            font-weight: 900; font-size: 28px;
-            text-transform: uppercase; padding: 10px 20px;
-            opacity: 0.08; pointer-events: none; z-index: 0;
+            border: 3px solid var(--stamp-color); color: var(--stamp-color);
+            font-weight: 900; font-size: 28px; text-transform: uppercase;
+            padding: 10px 20px; opacity: 0.08; pointer-events: none; z-index: 0;
             white-space: nowrap; letter-spacing: 2px;
         }
 
@@ -187,7 +177,6 @@
             word-break: break-word; line-height: 1.4;
         }
 
-        /* Copy Button */
         .copy-btn {
             margin-top: 15px; width: 100%; padding: 12px;
             background: transparent; border: 1px solid var(--border-color);
@@ -197,25 +186,24 @@
         }
         .copy-btn:hover { background: var(--bg-color); color: var(--accent-gold); border-color: var(--accent-gold); }
 
-        /* --- NEW: CORPORATE FOOTER SECTION --- */
+        /* FOOTER & CONTACT */
         .corporate-footer {
-            margin-top: 30px;
-            padding-top: 20px;
+            margin-top: 30px; padding-top: 20px;
             border-top: 1px solid var(--border-color);
-            text-align: center;
-            color: var(--corp-text);
-            font-size: 11px;
-            line-height: 1.6;
+            text-align: center; color: var(--corp-text);
+            font-size: 11px; line-height: 1.6;
         }
         .corp-name { font-weight: 700; font-size: 12px; text-transform: uppercase; color: var(--text-primary); margin-bottom: 4px; }
         .corp-cin { font-family: 'Consolas', monospace; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .corp-address a { color: inherit; text-decoration: none; border-bottom: 1px dashed var(--text-secondary); transition: border-color 0.3s; }
+        .corp-address a:hover { color: var(--accent-gold); border-bottom-style: solid; }
         .corp-address { margin-bottom: 12px; opacity: 0.9; }
-        
-        /* Contact Grid */
+
+        /* CONTACT GRID - DESKTOP */
         .contact-grid {
             display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
             background: rgba(128, 128, 128, 0.05);
-            padding: 8px; border-radius: 4px; border: 1px solid var(--border-color);
+            padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);
         }
         .contact-item { display: flex; align-items: center; gap: 5px; font-weight: 600; color: var(--text-secondary); }
         .contact-item a { color: inherit; text-decoration: none; transition: color 0.2s; }
@@ -225,16 +213,34 @@
         .easter-egg { font-size: 8px; opacity: 0.1; margin-top: 5px; color: var(--text-primary); }
         .hidden { display: none !important; }
 
-        /* Mobile Adjustments */
+        /* MOBILE ADJUSTMENTS */
         @media (max-width: 480px) {
             .detail-row { flex-direction: column; gap: 4px; }
             .label { color: var(--accent-gold); font-size: 11px; }
             .value { text-align: left; }
             .trust-strip { font-size: 9px; gap: 10px; }
-            .contact-grid { flex-direction: column; gap: 8px; }
+
+            /* --- FIXED MOBILE CONTACT LAYOUT --- */
+            /* 2 Columns: Phone | Email */
+            /* 1 Column: Website (Centered below) */
+            .contact-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Two equal columns */
+                gap: 10px;
+                padding: 12px;
+            }
+            .contact-item {
+                justify-content: center; /* Center content in grid cell */
+                font-size: 11px;
+                white-space: nowrap; /* Prevent breaking phone/email */
+            }
+            /* The 3rd item (Website) spans both columns to sit in the middle */
+            .contact-item:nth-child(3) {
+                grid-column: span 2;
+            }
         }
 
-        /* Print Styles */
+        /* PRINT */
         @media print {
             .theme-toggle-btn, .app-footer, .copy-btn { display: none; }
             body { background: white; }
@@ -299,7 +305,11 @@
         <div class="corporate-footer">
             <div class="corp-name">Legal Data Forensic Private Limited</div>
             <div class="corp-cin">CIN: U62099PN2026PTC251352</div>
-            <div class="corp-address">Chhatrapati Square, Nagpur, Maharashtra</div>
+            <div class="corp-address">
+                <a href="https://share.google/YmIDLajzJbFyWjYQ7" target="_blank">
+                    📍 Chhatrapati Square, Nagpur, Maharashtra
+                </a>
+            </div>
             
             <div class="contact-grid">
                 <div class="contact-item">📞 +91 7773900082</div>
@@ -316,12 +326,8 @@
 </div>
 
 <script>
-    // --- THEME LOGIC ---
-    window.onpageshow = function(event) {
-        if (event.persisted) {
-            window.location.reload();
-        }
-    };
+    // THEME LOGIC
+    window.onpageshow = function(event) { if (event.persisted) window.location.reload(); };
     const toggleBtn = document.getElementById('theme-toggle');
     const rootElem = document.documentElement;
     let currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -333,7 +339,7 @@
         localStorage.setItem('theme', currentTheme);
     });
 
-    // --- COPY LOGIC ---
+    // COPY LOGIC
     function copyLink() {
         navigator.clipboard.writeText(window.location.href);
         const btn = document.querySelector('.copy-btn');
@@ -345,23 +351,19 @@
         }, 2000);
     }
 
-    // --- MAIN VERIFICATION LOGIC ---
+    // MAIN VERIFICATION
     async function verify() {
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
 
         if (!id) { showError("ERR_NO_ID: No Document Identification detected."); return; }
 
-        // ANIMATED SCAN LOGIC
         const loadingText = document.getElementById('loading-text');
         const stages = ["CHECKING REGISTRY...", "VERIFYING HASH...", "ANALYZING INTEGRITY...", "FINALIZING..."];
         let step = 0;
         
         const scanInterval = setInterval(() => {
-            if(step < stages.length) {
-                loadingText.innerText = stages[step];
-                step++;
-            }
+            if(step < stages.length) { loadingText.innerText = stages[step]; step++; }
         }, 600);
 
         try {
@@ -377,7 +379,6 @@
 
             const doc = data.document;
             
-            // Expiry Logic
             if (doc.expiry_date.includes("Lifetime") || doc.expiry_date.includes("N/A")) {
                 showSuccess(doc);
             } else {
@@ -403,7 +404,6 @@
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge valid";
         badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/></svg> AUTHENTICATED`;
-        
         document.getElementById('status-explanation').innerText = "This document exists in the official registry and has not been altered since issuance.";
         fillDetails(doc);
     }
@@ -413,10 +413,8 @@
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge invalid";
         badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/></svg> INVALID / EXPIRED`;
-        
         document.getElementById('status-explanation').innerText = "This document is invalid, expired, or does not match official forensic records.";
         document.querySelector('.digital-stamp').style.display = 'none'; 
-        
         const errorText = document.getElementById('error-msg');
         errorText.innerText = msg;
         errorText.classList.remove('hidden');
