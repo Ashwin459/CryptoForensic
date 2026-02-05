@@ -199,7 +199,7 @@
         .corp-address a:hover { color: var(--accent-gold); border-bottom-style: solid; }
         .corp-address { margin-bottom: 12px; opacity: 0.9; }
 
-        /* CONTACT GRID - DESKTOP */
+        /* CONTACT GRID */
         .contact-grid {
             display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
             background: rgba(128, 128, 128, 0.05);
@@ -221,13 +221,9 @@
             .trust-strip { font-size: 9px; gap: 10px; }
 
             .contact-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px; padding: 12px;
+                display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px;
             }
-            .contact-item {
-                justify-content: center; font-size: 11px; white-space: nowrap;
-            }
+            .contact-item { justify-content: center; font-size: 11px; white-space: nowrap; }
             .contact-item:nth-child(3) { grid-column: span 2; }
         }
 
@@ -297,7 +293,7 @@
             <div class="corp-name">Legal Data Forensic Private Limited</div>
             <div class="corp-cin">CIN: U62099PN2026PTC251352</div>
             <div class="corp-address">
-                <a href="https://maps.app.goo.gl/PB4fsazk3CJvZ2nr7">
+                <a href="https://share.google/YmIDLajzJbFyWjYQ7" target="_blank">
                     📍 Chhatrapati Square, Nagpur, Maharashtra
                 </a>
             </div>
@@ -347,7 +343,10 @@
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
 
-        if (!id) { showError("ERR_NO_ID: No Document Identification detected."); return; }
+        if (!id) { 
+            showError("NOT VERIFIED", "ERR_NO_ID: No Document Identification detected."); 
+            return; 
+        }
 
         const loadingText = document.getElementById('loading-text');
         const stages = ["CONNECTING TO REGISTRY...", "VERIFYING SERVER SIGNATURE...", "AUDITING INTEGRITY...", "FINALIZING..."];
@@ -366,24 +365,27 @@
             clearInterval(scanInterval);
             const data = await response.json();
 
+            // HANDLING 404 OR MISSING DOCUMENT
             if (!data.document && !data.status) { 
-                showError("ERR_NOT_FOUND: Document absent from official registry."); 
+                showError("NOT VERIFIED", "ERR_NOT_FOUND: Document absent from official registry."); 
                 return; 
             }
 
             const doc = data.document;
             
-            // --- SECURITY UPGRADE: USE SERVER STATUS ---
+            // --- UPDATED STATUS LOGIC ---
             if (data.status === "VALID") {
-                showSuccess(doc);
+                showSuccess(doc); // Shows "VERIFIED"
+            } else if (data.status === "EXPIRED") {
+                showError("EXPIRED", data.message, doc); // Shows "EXPIRED"
             } else {
-                showError(data.message, doc); // Server says EXPIRED
+                showError("NOT VERIFIED", data.message, doc); // Fallback for any other issue
             }
 
         } catch (err) {
             clearInterval(scanInterval);
             console.error(err);
-            showError("ERR_NETWORK: Connection to registry failed.");
+            showError("NOT VERIFIED", "ERR_NETWORK: Connection to registry failed.");
         }
     }
 
@@ -391,16 +393,19 @@
         hideLoader();
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge valid";
-        badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/></svg> AUTHENTICATED`;
+        // CHANGED TO 'VERIFIED'
+        badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/></svg> VERIFIED`;
         document.getElementById('status-explanation').innerText = "This document exists in the official registry and has not been altered since issuance.";
         fillDetails(doc);
     }
 
-    function showError(msg, doc = null) {
+    // UPDATED FUNCTION SIGNATURE TO ACCEPT BADGE TEXT
+    function showError(badgeText, msg, doc = null) {
         hideLoader();
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge invalid";
-        badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/></svg> INVALID / EXPIRED`;
+        // DYNAMIC BADGE TEXT (EXPIRED / NOT VERIFIED)
+        badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/></svg> ${badgeText}`;
         document.getElementById('status-explanation').innerText = "This document is invalid, expired, or does not match official forensic records.";
         document.querySelector('.digital-stamp').style.display = 'none'; 
         const errorText = document.getElementById('error-msg');
