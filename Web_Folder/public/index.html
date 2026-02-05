@@ -10,12 +10,17 @@
             --bg-color: #f0f2f5;
             --card-bg: #ffffff;
             --text-primary: #1a1a1a;
-            --text-secondary: #666666;
+            --text-secondary: #555555;
             --accent-red: #c70000;
-            --accent-gold: #d4af37;
+            
+            /* UPDATED: Darker "Antique Gold" for visibility on white */
+            --accent-gold: #b8860b; 
+            
             --border-color: #e0e0e0;
             --header-bg: linear-gradient(135deg, #000000 0%, #5a0000 100%);
             --card-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            --valid-bg: rgba(184, 134, 11, 0.1); /* Matches new gold */
+            --invalid-bg: rgba(199, 0, 0, 0.1);
         }
 
         :root[data-theme="dark"] {
@@ -24,10 +29,24 @@
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
             --accent-red: #ff3333;
-            --accent-gold: #ffd700;
+            
+            /* UPDATED: Brighter "Metallic Gold" for visibility on black */
+            --accent-gold: #ffd700; 
+            
             --border-color: #333333;
             --header-bg: linear-gradient(135deg, #000000 0%, #3a0000 100%);
             --card-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            --valid-bg: rgba(255, 215, 0, 0.15);
+            --invalid-bg: rgba(255, 51, 51, 0.15);
+        }
+
+        /* --- SMOOTH TRANSITION FOR EVERYTHING --- */
+        *, *::before, *::after {
+            transition: background-color 0.5s ease, 
+                        color 0.5s ease, 
+                        border-color 0.5s ease, 
+                        fill 0.5s ease, 
+                        stroke 0.5s ease;
         }
 
         /* --- GLOBAL STYLES --- */
@@ -41,7 +60,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            /* Subtle pattern */
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828 1.415 1.415L8.2 0H5.373zM60 5.373l-.828-.83-1.415 1.415L60 8.2V5.373zM0 5.373l.828-.83 1.415 1.415L0 8.2V5.373zM0 54.627l.828.83 1.415-1.415L0 51.8v2.827zM60 54.627l-.828.83-1.415-1.415L60 51.8v2.827zM5.373 60l-.83-.828 1.415-1.415L8.2 60H5.373zM54.627 60l.83-.828-1.415-1.415L51.8 60h2.827z' fill='%239C92AC' fill-opacity='0.4' fill-rule='evenodd'/%3E");
         }
 
@@ -59,7 +78,6 @@
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             font-size: 22px;
-            transition: all 0.3s ease;
             outline: none;
             -webkit-tap-highlight-color: transparent;
         }
@@ -141,18 +159,18 @@
         }
 
         .valid {
-            background-color: rgba(212, 175, 55, 0.15); 
+            background-color: var(--valid-bg); 
             color: var(--accent-gold);
             border: 2px solid var(--accent-gold);
         }
 
         .invalid {
-            background-color: rgba(199, 0, 0, 0.15);
+            background-color: var(--invalid-bg);
             color: var(--accent-red);
             border: 2px solid var(--accent-red);
         }
 
-        /* --- DETAILS TABLE (UPDATED FOR RESPONSIVENESS) --- */
+        /* --- DETAILS TABLE --- */
         .details-box {
             background: rgba(128, 128, 128, 0.05);
             border-radius: 8px;
@@ -173,7 +191,7 @@
         .detail-row {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start; /* Allows vertical alignment for long text */
+            align-items: flex-start;
             padding: 14px 0;
             border-bottom: 1px solid var(--border-color);
         }
@@ -188,9 +206,9 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            min-width: 100px; /* Ensures label has space */
+            min-width: 100px;
             padding-right: 15px;
-            margin-top: 2px; /* Aligns with text if text is large */
+            margin-top: 2px;
         }
 
         .value {
@@ -199,38 +217,34 @@
             font-weight: 700;
             text-align: right;
             font-family: 'Consolas', monospace;
-            
-            /* --- CRITICAL FIX FOR LONG TEXT --- */
             max-width: 70%;
-            word-break: break-word; /* Prevents overflow */
-            white-space: pre-wrap;  /* Respects line breaks */
-            line-height: 1.4;       /* Readable paragraph spacing */
+            word-break: break-word;
+            white-space: pre-wrap;
+            line-height: 1.4;
         }
 
         /* --- MOBILE OPTIMIZATION --- */
         @media (max-width: 480px) {
             .detail-row {
-                flex-direction: column; /* Stack vertically on phones */
+                flex-direction: column;
                 align-items: flex-start;
                 gap: 5px;
             }
-            
             .label {
                 font-size: 11px;
-                color: var(--accent-gold); /* Highlight label color on mobile */
+                color: var(--accent-gold); /* Gold label on mobile for clarity */
                 margin-bottom: 2px;
             }
-
             .value {
-                text-align: left; /* Align left for easier reading */
-                max-width: 100%;  /* Use full width */
+                text-align: left;
+                max-width: 100%;
                 font-size: 14px;
             }
         }
 
         /* --- LOADING SPINNER --- */
         .loader {
-            border: 4px solid rgba(212, 175, 55, 0.2);
+            border: 4px solid rgba(128, 128, 128, 0.2);
             border-top: 4px solid var(--accent-gold);
             border-radius: 50%;
             width: 45px;
@@ -253,7 +267,13 @@
             letter-spacing: 1px;
         }
 
-        
+        .easter-egg {
+            font-size: 7px;
+            opacity: 0.08;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+        }
     </style>
 </head>
 <body>
@@ -283,9 +303,7 @@
                 <div class="detail-row"><span class="label">Reference ID</span> <span class="value" id="d-ref"></span></div>
                 <div class="detail-row"><span class="label">Credential Type</span> <span class="value" id="d-type" style="color: var(--accent-gold);"></span></div>
                 <div class="detail-row"><span class="label">Issued To</span> <span class="value" id="d-name"></span></div>
-                
                 <div class="detail-row"><span class="label">Purpose</span> <span class="value" id="d-purpose"></span></div>
-                
                 <div class="detail-row"><span class="label">Date Issued</span> <span class="value" id="d-issue"></span></div>
                 <div class="detail-row"><span class="label">Valid Until</span> <span class="value" id="d-expiry"></span></div>
             </div>
@@ -295,7 +313,7 @@
 
         <div class="footer">
             <p>SECURE FORENSIC DATA SYSTEM © 2026</p>
-            
+            <p class="easter-egg">Made by Ashwin and Laxmikant</p>
         </div>
     </div>
 </div>
