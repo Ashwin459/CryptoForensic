@@ -50,20 +50,23 @@
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828 1.415 1.415L8.2 0H5.373zM60 5.373l-.828-.83-1.415 1.415L60 8.2V5.373zM0 5.373l.828-.83 1.415 1.415L0 8.2V5.373zM0 54.627l.828.83 1.415-1.415L0 51.8v2.827zM60 54.627l-.828.83-1.415-1.415L60 51.8v2.827zM5.373 60l-.83-.828 1.415-1.415L8.2 60H5.373zM54.627 60l.83-.828-1.415-1.415L51.8 60h2.827z' fill='%239C92AC' fill-opacity='0.4' fill-rule='evenodd'/%3E");
         }
 
-        /* --- THEME TOGGLE BUTTON --- */
+        /* --- THEME TOGGLE BUTTON (MOBILE FIXED) --- */
         .theme-toggle-btn {
-            position: absolute;
+            position: fixed; /* FIXED ensures it stays on screen even on mobile scroll */
             top: 20px;
             right: 20px;
+            z-index: 9999; /* Forces it to sit ON TOP of everything */
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color); /* Thicker border for visibility */
             color: var(--text-primary);
-            padding: 10px;
+            padding: 12px; /* Larger touch target for mobile */
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: var(--card-shadow);
-            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* Stronger shadow */
+            font-size: 22px;
             transition: all 0.3s ease;
+            outline: none;
+            -webkit-tap-highlight-color: transparent; /* Removes blue tap box on mobile */
         }
         .theme-toggle-btn:hover {
             transform: scale(1.1);
@@ -80,6 +83,7 @@
             overflow: hidden;
             border: 1px solid var(--border-color);
             position: relative;
+            z-index: 1; /* Ensures card stays below the fixed button */
         }
 
         /* --- HEADER SECTION --- */
