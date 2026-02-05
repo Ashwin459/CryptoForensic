@@ -5,23 +5,22 @@ import crypto from 'crypto'; // Required for hashing
 let cachedClient = null;
 let cachedDb = null;
 
-// --- CONFIGURATION ---
-// Ideally, put this in Vercel Environment Variables as MONGODB_URI
-// For now, we use the direct string to ensure it works immediately for you.
-const MONGODB_URI = "mongodb+srv://vigilantdavinci3_db_user:yv0ETuiPhwtmPgCj@cft.rakztun.mongodb.net/?appName=CFT";
-
 async function connectToDatabase() {
     if (cachedClient && cachedDb) {
         return { client: cachedClient, db: cachedDb };
     }
 
-    if (!MONGODB_URI) {
-        throw new Error('Define the MONGODB_URI string');
+    // Get the URI from Vercel Environment Variables
+    const uri = process.env.MONGODB_URI;
+
+    if (!uri) {
+        throw new Error('Please define the MONGODB_URI environment variable inside Vercel');
     }
 
-    const client = new MongoClient(MONGODB_URI);
+    const client = new MongoClient(uri);
     await client.connect();
 
+    // Connect to the specific database 'cft_db'
     const db = client.db('cft_db');
 
     cachedClient = client;
@@ -51,7 +50,7 @@ export default async function handler(req, res) {
     try {
         const { db } = await connectToDatabase();
         const collection = db.collection('assurance_letters');
-        const logs = db.collection('verification_audit_logs'); // NEW: Audit Log Collection
+        const logs = db.collection('verification_audit_logs'); // Audit Log Collection
 
         // 2. Fetch Document
         const doc = await collection.findOne({ internal_id: id });
