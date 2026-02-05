@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legal Data Forensic Verification</title>
+    
+    <meta property="og:title" content="Legal Data Forensic Verification">
+    <meta property="og:description" content="Official Document Verification Registry. Secure and Authenticated.">
+    <meta property="og:image" content="https://your-project.vercel.app/forensic_logo.png">
+    <meta property="og:url" content="https://your-project.vercel.app">
+    <meta name="theme-color" content="#b8860b">
+
     <style>
         /* --- THEME VARIABLES --- */
         :root[data-theme="light"] {
@@ -12,14 +19,11 @@
             --text-primary: #1a1a1a;
             --text-secondary: #555555;
             --accent-red: #c70000;
-            
-            /* UPDATED: Darker "Antique Gold" for visibility on white */
             --accent-gold: #b8860b; 
-            
             --border-color: #e0e0e0;
             --header-bg: linear-gradient(135deg, #000000 0%, #5a0000 100%);
             --card-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            --valid-bg: rgba(184, 134, 11, 0.1); /* Matches new gold */
+            --valid-bg: rgba(184, 134, 11, 0.1);
             --invalid-bg: rgba(199, 0, 0, 0.1);
         }
 
@@ -29,10 +33,7 @@
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
             --accent-red: #ff3333;
-            
-            /* UPDATED: Brighter "Metallic Gold" for visibility on black */
             --accent-gold: #ffd700; 
-            
             --border-color: #333333;
             --header-bg: linear-gradient(135deg, #000000 0%, #3a0000 100%);
             --card-shadow: 0 15px 35px rgba(0,0,0,0.5);
@@ -40,16 +41,11 @@
             --invalid-bg: rgba(255, 51, 51, 0.15);
         }
 
-        /* --- SMOOTH TRANSITION FOR EVERYTHING --- */
+        /* --- SMOOTH TRANSITION --- */
         *, *::before, *::after {
-            transition: background-color 0.5s ease, 
-                        color 0.5s ease, 
-                        border-color 0.5s ease, 
-                        fill 0.5s ease, 
-                        stroke 0.5s ease;
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
         }
 
-        /* --- GLOBAL STYLES --- */
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
@@ -60,11 +56,10 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            /* Subtle pattern */
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828 1.415 1.415L8.2 0H5.373zM60 5.373l-.828-.83-1.415 1.415L60 8.2V5.373zM0 5.373l.828-.83 1.415 1.415L0 8.2V5.373zM0 54.627l.828.83 1.415-1.415L0 51.8v2.827zM60 54.627l-.828.83-1.415-1.415L60 51.8v2.827zM5.373 60l-.83-.828 1.415-1.415L8.2 60H5.373zM54.627 60l.83-.828-1.415-1.415L51.8 60h2.827z' fill='%239C92AC' fill-opacity='0.4' fill-rule='evenodd'/%3E");
         }
 
-        /* --- THEME TOGGLE BUTTON (MOBILE FIXED) --- */
+        /* --- TOGGLE BUTTON --- */
         .theme-toggle-btn {
             position: fixed;
             top: 20px;
@@ -82,7 +77,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- MAIN CARD --- */
+        /* --- CARD --- */
         .card {
             background: var(--card-bg);
             width: 100%;
@@ -95,7 +90,7 @@
             z-index: 1;
         }
 
-        /* --- HEADER SECTION --- */
+        /* --- HEADER --- */
         .header {
             background: var(--header-bg);
             color: white;
@@ -134,15 +129,8 @@
             color: var(--accent-gold);
         }
 
-        /* --- CONTENT SECTION --- */
-        .content {
-            padding: 30px;
-        }
-
-        .status-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .content { padding: 30px; }
+        .status-container { text-align: center; margin-bottom: 30px; }
 
         .status-badge {
             display: inline-flex;
@@ -157,36 +145,40 @@
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+        .valid { background-color: var(--valid-bg); color: var(--accent-gold); border: 2px solid var(--accent-gold); }
+        .invalid { background-color: var(--invalid-bg); color: var(--accent-red); border: 2px solid var(--accent-red); }
 
-        .valid {
-            background-color: var(--valid-bg); 
-            color: var(--accent-gold);
-            border: 2px solid var(--accent-gold);
-        }
-
-        .invalid {
-            background-color: var(--invalid-bg);
-            color: var(--accent-red);
-            border: 2px solid var(--accent-red);
-        }
-
-        /* --- DETAILS TABLE --- */
+        /* --- DETAILS BOX & IMPROVEMENT 2: WATERMARK --- */
         .details-box {
             background: rgba(128, 128, 128, 0.05);
             border-radius: 8px;
             padding: 25px;
             border: 1px solid var(--border-color);
             position: relative;
+            overflow: hidden; /* Contains watermark */
         }
         
+        /* Corner Accents */
         .details-box::before, .details-box::after {
-            content: '';
-            position: absolute;
-            width: 10px; height: 10px;
-            border: 2px solid var(--accent-gold);
+            content: ''; position: absolute; width: 10px; height: 10px; border: 2px solid var(--accent-gold); z-index: 2;
         }
         .details-box::before { top: -1px; left: -1px; border-bottom: none; border-right: none; }
         .details-box::after { bottom: -1px; right: -1px; border-top: none; border-left: none; }
+
+        /* The Watermark */
+        .watermark {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 40px;
+            font-weight: 900;
+            color: var(--text-primary);
+            opacity: 0.03;
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+        }
 
         .detail-row {
             display: flex;
@@ -194,11 +186,10 @@
             align-items: flex-start;
             padding: 14px 0;
             border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 1;
         }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
+        .detail-row:last-child { border-bottom: none; }
 
         .label {
             color: var(--text-secondary);
@@ -223,57 +214,65 @@
             line-height: 1.4;
         }
 
-        /* --- MOBILE OPTIMIZATION --- */
+        /* Mobile View */
         @media (max-width: 480px) {
-            .detail-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-            .label {
-                font-size: 11px;
-                color: var(--accent-gold); /* Gold label on mobile for clarity */
-                margin-bottom: 2px;
-            }
-            .value {
-                text-align: left;
-                max-width: 100%;
-                font-size: 14px;
-            }
+            .detail-row { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .label { font-size: 11px; color: var(--accent-gold); margin-bottom: 2px; }
+            .value { text-align: left; max-width: 100%; font-size: 14px; }
         }
 
-        /* --- LOADING SPINNER --- */
+        /* --- IMPROVEMENT 3: PRINT VIEW --- */
+        @media print {
+            .theme-toggle-btn, .footer, .copy-btn { display: none !important; }
+            body { background: white; -webkit-print-color-adjust: exact; }
+            .card { box-shadow: none; border: 2px solid black; max-width: 100%; }
+            .header { background: white !important; color: black !important; border-bottom: 2px solid black; }
+            .header h1 { -webkit-text-fill-color: black; background: none; color: black; }
+            .header p { color: black; }
+            .status-badge { border: 2px solid black; color: black; background: none !important; }
+            .value { color: black !important; }
+            .details-box { border: 1px solid black; }
+            .details-box::before, .details-box::after { border-color: black; }
+        }
+
+        /* Copy Button Style */
+        .copy-btn {
+            margin-top: 15px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: var(--bg-color);
+            color: var(--accent-gold);
+            border-color: var(--accent-gold);
+        }
+
         .loader {
             border: 4px solid rgba(128, 128, 128, 0.2);
             border-top: 4px solid var(--accent-gold);
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            width: 45px; height: 45px;
             animation: spin 0.8s linear infinite;
             margin: 25px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
         .hidden { display: none; }
 
         .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 30px; text-align: center; font-size: 11px;
+            color: var(--text-secondary); border-top: 1px solid var(--border-color);
+            padding-top: 20px; text-transform: uppercase; letter-spacing: 1px;
         }
-
-        .easter-egg {
-            font-size: 7px;
-            opacity: 0.08;
-            margin-top: 8px;
-            letter-spacing: 0.5px;
-            color: var(--text-primary);
-        }
+        .easter-egg { font-size: 7px; opacity: 0.08; margin-top: 8px; color: var(--text-primary); }
     </style>
 </head>
 <body>
@@ -294,19 +293,27 @@
         </div>
 
         <div id="result" class="hidden">
-            
             <div class="status-container">
                 <div id="status-badge" class="status-badge"></div>
             </div>
 
             <div id="details-container" class="hidden details-box">
+                <div class="watermark">OFFICIAL RECORD</div>
+                
                 <div class="detail-row"><span class="label">Reference ID</span> <span class="value" id="d-ref"></span></div>
                 <div class="detail-row"><span class="label">Credential Type</span> <span class="value" id="d-type" style="color: var(--accent-gold);"></span></div>
                 <div class="detail-row"><span class="label">Issued To</span> <span class="value" id="d-name"></span></div>
                 <div class="detail-row"><span class="label">Purpose</span> <span class="value" id="d-purpose"></span></div>
                 <div class="detail-row"><span class="label">Date Issued</span> <span class="value" id="d-issue"></span></div>
                 <div class="detail-row"><span class="label">Valid Until</span> <span class="value" id="d-expiry"></span></div>
+                
+                <div class="detail-row" style="border-top: 2px dashed var(--border-color); margin-top: 15px;">
+                    <span class="label">Verified At</span> 
+                    <span class="value" id="verify-timestamp" style="font-size: 11px; opacity: 0.7;"></span>
+                </div>
             </div>
+
+            <button class="copy-btn" onclick="copyLink()">🔗 COPY VERIFICATION LINK</button>
 
             <div id="error-msg" class="hidden" style="margin-top: 25px; text-align: center; color: var(--accent-red); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;"></div>
         </div>
@@ -322,8 +329,7 @@
     // Theme Logic
     const toggleBtn = document.getElementById('theme-toggle');
     const rootElem = document.documentElement;
-    let currentTheme = localStorage.getItem('theme') || 
-                       (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    let currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     rootElem.setAttribute('data-theme', currentTheme);
 
     toggleBtn.addEventListener('click', () => {
@@ -332,27 +338,35 @@
         localStorage.setItem('theme', currentTheme);
     });
 
+    // Copy Link Logic
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href);
+        const btn = document.querySelector('.copy-btn');
+        const originalText = btn.innerText;
+        btn.innerText = "✅ LINK COPIED!";
+        btn.style.color = "var(--accent-gold)";
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.color = "var(--text-secondary)";
+        }, 2000);
+    }
+
     // Verification Logic
     async function verify() {
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
 
-        if (!id) {
-            showError("ERR_NO_ID: No Document Identification detected.");
-            return;
-        }
+        if (!id) { showError("ERR_NO_ID: No Document Identification detected."); return; }
 
         try {
             const response = await fetch(`/api/verify?id=${id}`);
             const data = await response.json();
 
-            if (!data.document) {
-                showError("ERR_NOT_FOUND: Document absent from official registry.");
-                return;
-            }
+            if (!data.document) { showError("ERR_NOT_FOUND: Document absent from official registry."); return; }
 
             const doc = data.document;
             
+            // Date Check (DD-MM-YYYY)
             if (doc.expiry_date.includes("Lifetime") || doc.expiry_date.includes("N/A")) {
                 showSuccess(doc);
             } else {
@@ -378,12 +392,7 @@
         hideLoader();
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge valid";
-        badge.innerHTML = `
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/>
-            </svg>
-            AUTHENTICATED & VALID
-        `;
+        badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/></svg> AUTHENTICATED & VALID`;
         fillDetails(doc);
     }
 
@@ -391,12 +400,7 @@
         hideLoader();
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge invalid";
-        badge.innerHTML = `
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
-            </svg>
-            INVALID / EXPIRED
-        `;
+        badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/></svg> INVALID / EXPIRED`;
         const errorText = document.getElementById('error-msg');
         errorText.innerText = msg;
         errorText.classList.remove('hidden');
@@ -406,13 +410,14 @@
     function fillDetails(doc) {
         const container = document.getElementById('details-container');
         container.classList.remove('hidden');
-        
         document.getElementById('d-ref').innerText = doc.ref_no || "N/A";
         document.getElementById('d-type').innerText = (doc.type || "Document").toUpperCase(); 
         document.getElementById('d-name').innerText = doc.issued_to || "N/A";
         document.getElementById('d-purpose').innerText = doc.purpose || "N/A";
         document.getElementById('d-issue').innerText = doc.issue_date || "N/A";
         document.getElementById('d-expiry').innerText = doc.expiry_date || "N/A";
+        // Set Verification Timestamp
+        document.getElementById('verify-timestamp').innerText = new Date().toLocaleString() + " (Secure Time)";
     }
 
     function hideLoader() {
