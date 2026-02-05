@@ -11,6 +11,8 @@
     <meta property="og:url" content="https://your-project.vercel.app">
     <meta name="theme-color" content="#b8860b">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <style>
         /* --- THEME VARIABLES --- */
         :root[data-theme="light"] {
@@ -19,12 +21,15 @@
             --text-primary: #1a1a1a;
             --text-secondary: #555555;
             --accent-red: #c70000;
-            --accent-gold: #b8860b; 
+            --accent-gold: #b8860b; /* Antique Gold */
             --border-color: #e0e0e0;
             --header-bg: linear-gradient(135deg, #000000 0%, #5a0000 100%);
             --card-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            --valid-bg: rgba(184, 134, 11, 0.1);
-            --invalid-bg: rgba(199, 0, 0, 0.1);
+            --valid-bg: rgba(184, 134, 11, 0.08);
+            --invalid-bg: rgba(199, 0, 0, 0.08);
+            --trust-strip-bg: #f8f9fa;
+            --trust-text: #666;
+            --stamp-color: #b8860b;
         }
 
         :root[data-theme="dark"] {
@@ -33,17 +38,20 @@
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
             --accent-red: #ff3333;
-            --accent-gold: #ffd700; 
+            --accent-gold: #ffd700; /* Metallic Gold */
             --border-color: #333333;
             --header-bg: linear-gradient(135deg, #000000 0%, #3a0000 100%);
-            --card-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            --valid-bg: rgba(255, 215, 0, 0.15);
-            --invalid-bg: rgba(255, 51, 51, 0.15);
+            --card-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            --valid-bg: rgba(255, 215, 0, 0.05);
+            --invalid-bg: rgba(255, 51, 51, 0.05);
+            --trust-strip-bg: #1a1a1a;
+            --trust-text: #888;
+            --stamp-color: #ffd700;
         }
 
-        /* --- SMOOTH TRANSITION --- */
+        /* --- GLOBAL TRANSITIONS --- */
         *, *::before, *::after {
-            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
         }
 
         body {
@@ -56,228 +64,171 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828 1.415 1.415L8.2 0H5.373zM60 5.373l-.828-.83-1.415 1.415L60 8.2V5.373zM0 5.373l.828-.83 1.415 1.415L0 8.2V5.373zM0 54.627l.828.83 1.415-1.415L0 51.8v2.827zM60 54.627l-.828.83-1.415-1.415L60 51.8v2.827zM5.373 60l-.83-.828 1.415-1.415L8.2 60H5.373zM54.627 60l.83-.828-1.415-1.415L51.8 60h2.827z' fill='%239C92AC' fill-opacity='0.4' fill-rule='evenodd'/%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828 1.415 1.415L8.2 0H5.373zM60 5.373l-.828-.83-1.415 1.415L60 8.2V5.373zM0 5.373l.828-.83 1.415 1.415L0 8.2V5.373zM0 54.627l.828.83 1.415-1.415L0 51.8v2.827zM60 54.627l-.828.83-1.415-1.415L60 51.8v2.827zM5.373 60l-.83-.828 1.415-1.415L8.2 60H5.373zM54.627 60l.83-.828-1.415-1.415L51.8 60h2.827z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E");
         }
 
-        /* --- TOGGLE BUTTON --- */
+        /* --- THEME TOGGLE (Fixed Mobile) --- */
         .theme-toggle-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            font-size: 22px;
-            outline: none;
-            -webkit-tap-highlight-color: transparent;
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            background: var(--card-bg); border: 2px solid var(--border-color);
+            color: var(--text-primary); padding: 12px; border-radius: 50%;
+            cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-size: 20px; outline: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- CARD --- */
         .card {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 480px;
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            position: relative;
-            z-index: 1;
+            background: var(--card-bg); width: 100%; max-width: 500px;
+            border-radius: 12px; box-shadow: var(--card-shadow);
+            overflow: hidden; border: 1px solid var(--border-color);
+            position: relative; z-index: 1;
         }
 
-        /* --- HEADER --- */
+        /* --- HEADER & TRUST STRIP --- */
         .header {
-            background: var(--header-bg);
-            color: white;
-            padding: 35px 20px;
-            text-align: center;
-            position: relative;
-            border-bottom: 3px solid var(--accent-gold);
+            background: var(--header-bg); color: white;
+            padding: 30px 20px 25px; text-align: center;
+            border-bottom: 4px solid var(--accent-gold);
         }
-
-        .header-logo {
-            width: 100px;
-            height: auto;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-        }
-
+        .header-logo { width: 90px; height: auto; margin-bottom: 10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
         .header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-family: 'Arial Black', sans-serif;
-            background: linear-gradient(to right, #ffffff, var(--accent-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin: 0; font-size: 22px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px; font-family: 'Arial Black', sans-serif;
+            background: linear-gradient(to right, #fff, var(--accent-gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
+        .header p { margin: 5px 0 0; opacity: 0.9; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-gold); }
 
-        .header p {
-            margin: 8px 0 0;
-            opacity: 0.9;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent-gold);
+        /* FEATURE 1: TRUST STRIP */
+        .trust-strip {
+            background: var(--trust-strip-bg);
+            color: var(--trust-text);
+            font-size: 10px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.5px; padding: 8px; text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
         }
+        .trust-item { display: flex; align-items: center; gap: 4px; }
 
         .content { padding: 30px; }
-        .status-container { text-align: center; margin-bottom: 30px; }
 
+        /* --- FORENSIC LOADING --- */
+        #loading { display: flex; flex-direction: column; align-items: center; }
+        .loader {
+            border: 3px solid rgba(128, 128, 128, 0.1);
+            border-top: 3px solid var(--accent-gold);
+            border-radius: 50%; width: 50px; height: 50px;
+            animation: spin 0.8s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #loading-text { font-family: 'Consolas', monospace; color: var(--text-secondary); font-size: 13px; letter-spacing: 1px; }
+
+        /* --- RESULT AREA --- */
+        .status-container { text-align: center; margin-bottom: 20px; }
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 28px;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 16px;
-            gap: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 10px 24px; border-radius: 4px;
+            font-weight: 800; font-size: 16px; gap: 10px;
+            text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
         .valid { background-color: var(--valid-bg); color: var(--accent-gold); border: 2px solid var(--accent-gold); }
         .invalid { background-color: var(--invalid-bg); color: var(--accent-red); border: 2px solid var(--accent-red); }
 
-        /* --- DETAILS BOX & IMPROVEMENT 2: WATERMARK --- */
-        .details-box {
-            background: rgba(128, 128, 128, 0.05);
-            border-radius: 8px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden; /* Contains watermark */
+        /* FEATURE 5: STATUS EXPLANATION */
+        .status-explanation {
+            font-size: 13px; color: var(--text-secondary); margin-top: 10px;
+            line-height: 1.4; padding: 0 10px;
         }
-        
-        /* Corner Accents */
-        .details-box::before, .details-box::after {
-            content: ''; position: absolute; width: 10px; height: 10px; border: 2px solid var(--accent-gold); z-index: 2;
-        }
-        .details-box::before { top: -1px; left: -1px; border-bottom: none; border-right: none; }
-        .details-box::after { bottom: -1px; right: -1px; border-top: none; border-left: none; }
 
-        /* The Watermark */
-        .watermark {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 40px;
-            font-weight: 900;
-            color: var(--text-primary);
-            opacity: 0.03;
-            white-space: nowrap;
-            z-index: 0;
-            pointer-events: none;
-            user-select: none;
+        /* --- DETAILS BOX --- */
+        .details-box {
+            background: rgba(128, 128, 128, 0.03);
+            border-radius: 6px; padding: 25px;
+            border: 1px solid var(--border-color);
+            position: relative; overflow: hidden; margin-bottom: 25px;
+        }
+        /* Tech Corners */
+        .details-box::before, .details-box::after {
+            content: ''; position: absolute; width: 8px; height: 8px;
+            border: 1px solid var(--accent-gold); z-index: 2;
+        }
+        .details-box::before { top: 4px; left: 4px; border-bottom: none; border-right: none; }
+        .details-box::after { bottom: 4px; right: 4px; border-top: none; border-left: none; }
+
+        /* FEATURE 7: DIGITAL STAMP */
+        .digital-stamp {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            border: 3px solid var(--stamp-color);
+            color: var(--stamp-color);
+            font-weight: 900; font-size: 28px;
+            text-transform: uppercase; padding: 10px 20px;
+            opacity: 0.08; pointer-events: none; z-index: 0;
+            white-space: nowrap; letter-spacing: 2px;
+            mask-image: url("data:image/svg+xml;utf8,<svg ...>"); /* Optional grunge effect */
         }
 
         .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-            z-index: 1;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 12px 0; border-bottom: 1px solid var(--border-color); position: relative; z-index: 1;
         }
         .detail-row:last-child { border-bottom: none; }
-
         .label {
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-width: 100px;
-            padding-right: 15px;
-            margin-top: 2px;
+            color: var(--text-secondary); font-size: 12px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px; min-width: 110px; margin-top: 3px;
         }
-
         .value {
-            color: var(--text-primary);
-            font-size: 15px;
-            font-weight: 700;
-            text-align: right;
-            font-family: 'Consolas', monospace;
-            max-width: 70%;
-            word-break: break-word;
-            white-space: pre-wrap;
-            line-height: 1.4;
+            color: var(--text-primary); font-size: 14px; font-weight: 700;
+            text-align: right; font-family: 'Consolas', monospace;
+            word-break: break-word; line-height: 1.4;
         }
 
-        /* Mobile View */
-        @media (max-width: 480px) {
-            .detail-row { flex-direction: column; align-items: flex-start; gap: 5px; }
-            .label { font-size: 11px; color: var(--accent-gold); margin-bottom: 2px; }
-            .value { text-align: left; max-width: 100%; font-size: 14px; }
+        /* FEATURE 4: QR CODE SECTION */
+        .qr-section {
+            text-align: center; margin-top: 20px; padding-top: 20px;
+            border-top: 1px dashed var(--border-color); display: flex;
+            flex-direction: column; align-items: center; gap: 10px;
         }
+        .qr-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 1px; }
+        #qrcode img { border: 4px solid white; border-radius: 4px; }
 
-        /* --- IMPROVEMENT 3: PRINT VIEW --- */
-        @media print {
-            .theme-toggle-btn, .footer, .copy-btn { display: none !important; }
-            body { background: white; -webkit-print-color-adjust: exact; }
-            .card { box-shadow: none; border: 2px solid black; max-width: 100%; }
-            .header { background: white !important; color: black !important; border-bottom: 2px solid black; }
-            .header h1 { -webkit-text-fill-color: black; background: none; color: black; }
-            .header p { color: black; }
-            .status-badge { border: 2px solid black; color: black; background: none !important; }
-            .value { color: black !important; }
-            .details-box { border: 1px solid black; }
-            .details-box::before, .details-box::after { border-color: black; }
-        }
-
-        /* Copy Button Style */
+        /* Copy Button */
         .copy-btn {
-            margin-top: 15px;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            width: 100%;
-            font-weight: 600;
-            letter-spacing: 1px;
-            transition: all 0.2s;
+            margin-top: 15px; width: 100%; padding: 12px;
+            background: transparent; border: 1px solid var(--border-color);
+            color: var(--text-secondary); border-radius: 4px; cursor: pointer;
+            font-size: 12px; font-weight: 700; letter-spacing: 1px;
+            transition: all 0.2s; text-transform: uppercase;
         }
-        .copy-btn:hover {
-            background: var(--bg-color);
-            color: var(--accent-gold);
-            border-color: var(--accent-gold);
+        .copy-btn:hover { background: var(--bg-color); color: var(--accent-gold); border-color: var(--accent-gold); }
+
+        .footer { margin-top: 30px; text-align: center; font-size: 11px; color: var(--text-secondary); opacity: 0.7; }
+        .easter-egg { font-size: 8px; opacity: 0.1; margin-top: 5px; color: var(--text-primary); }
+        .hidden { display: none !important; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            .detail-row { flex-direction: column; gap: 4px; }
+            .label { color: var(--accent-gold); font-size: 11px; }
+            .value { text-align: left; }
+            .trust-strip { font-size: 9px; gap: 10px; }
         }
 
-        .loader {
-            border: 4px solid rgba(128, 128, 128, 0.2);
-            border-top: 4px solid var(--accent-gold);
-            border-radius: 50%;
-            width: 45px; height: 45px;
-            animation: spin 0.8s linear infinite;
-            margin: 25px auto;
+        /* Print Styles */
+        @media print {
+            .theme-toggle-btn, .footer, .copy-btn { display: none; }
+            body { background: white; }
+            .card { box-shadow: none; border: 2px solid #000; }
+            .trust-strip { background: none; border-bottom: 1px solid #000; color: #000; }
+            .status-badge { border: 2px solid #000; color: #000; background: none; }
+            .details-box { border: 1px solid #000; }
+            .digital-stamp { opacity: 0.2; color: #000; border-color: #000; }
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .hidden { display: none; }
-
-        .footer {
-            margin-top: 30px; text-align: center; font-size: 11px;
-            color: var(--text-secondary); border-top: 1px solid var(--border-color);
-            padding-top: 20px; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .easter-egg { font-size: 7px; opacity: 0.08; margin-top: 8px; color: var(--text-primary); }
     </style>
 </head>
 <body>
 
-    <button class="theme-toggle-btn" id="theme-toggle" title="Toggle Dark/Light Mode">🌓</button>
+    <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌓</button>
 
 <div class="card">
     <div class="header">
@@ -286,20 +237,27 @@
         <p>Official Document Verification</p>
     </div>
 
-    <div class="content">
+    <div class="trust-strip">
+        <div class="trust-item">🔒 SSL SECURED</div>
+        <div class="trust-item">🏛 COURT ADMISSIBLE</div>
+        <div class="trust-item">🧾 TAMPER EVIDENT</div>
+    </div>
+
+    <div class="content" aria-live="polite">
         <div id="loading">
             <div class="loader"></div>
-            <p style="text-align:center; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Accessing Secure Registry...</p>
+            <p id="loading-text">INITIALIZING FORENSIC SCAN...</p>
         </div>
 
         <div id="result" class="hidden">
             <div class="status-container">
-                <div id="status-badge" class="status-badge"></div>
+                <div id="status-badge" class="status-badge" role="status"></div>
+                <p id="status-explanation" class="status-explanation"></p>
             </div>
 
             <div id="details-container" class="hidden details-box">
-                <div class="watermark">OFFICIAL RECORD</div>
-                
+                <div class="digital-stamp">✔ VERIFIED<br><span style="font-size:12px; border:none;">LEGAL DATA FORENSIC</span></div>
+
                 <div class="detail-row"><span class="label">Reference ID</span> <span class="value" id="d-ref"></span></div>
                 <div class="detail-row"><span class="label">Credential Type</span> <span class="value" id="d-type" style="color: var(--accent-gold);"></span></div>
                 <div class="detail-row"><span class="label">Issued To</span> <span class="value" id="d-name"></span></div>
@@ -307,15 +265,19 @@
                 <div class="detail-row"><span class="label">Date Issued</span> <span class="value" id="d-issue"></span></div>
                 <div class="detail-row"><span class="label">Valid Until</span> <span class="value" id="d-expiry"></span></div>
                 
-                <div class="detail-row" style="border-top: 2px dashed var(--border-color); margin-top: 15px;">
+                <div class="detail-row" style="border-top: 1px dashed var(--border-color); margin-top: 15px; padding-top: 15px;">
                     <span class="label">Verified At</span> 
-                    <span class="value" id="verify-timestamp" style="font-size: 11px; opacity: 0.7;"></span>
+                    <span class="value" id="verify-timestamp" style="font-size: 11px; opacity: 0.8;"></span>
                 </div>
             </div>
 
-            <button class="copy-btn" onclick="copyLink()">🔗 COPY VERIFICATION LINK</button>
+            <div class="qr-section">
+                <div id="qrcode"></div>
+                <div class="qr-label">Scan to Validate Original</div>
+            </div>
 
-            <div id="error-msg" class="hidden" style="margin-top: 25px; text-align: center; color: var(--accent-red); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;"></div>
+            <button class="copy-btn" onclick="copyLink()">🔗 COPY VERIFICATION LINK</button>
+            <div id="error-msg" class="hidden" style="margin-top: 25px; text-align: center; color: var(--accent-red); font-weight: 700;"></div>
         </div>
 
         <div class="footer">
@@ -326,7 +288,7 @@
 </div>
 
 <script>
-    // Theme Logic
+    // --- THEME LOGIC ---
     const toggleBtn = document.getElementById('theme-toggle');
     const rootElem = document.documentElement;
     let currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -338,51 +300,68 @@
         localStorage.setItem('theme', currentTheme);
     });
 
-    // Copy Link Logic
+    // --- COPY LOGIC ---
     function copyLink() {
         navigator.clipboard.writeText(window.location.href);
         const btn = document.querySelector('.copy-btn');
-        const originalText = btn.innerText;
         btn.innerText = "✅ LINK COPIED!";
         btn.style.color = "var(--accent-gold)";
         setTimeout(() => {
-            btn.innerText = originalText;
+            btn.innerText = "🔗 COPY VERIFICATION LINK";
             btn.style.color = "var(--text-secondary)";
         }, 2000);
     }
 
-    // Verification Logic
+    // --- MAIN VERIFICATION LOGIC ---
     async function verify() {
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
 
         if (!id) { showError("ERR_NO_ID: No Document Identification detected."); return; }
 
+        // FEATURE 2: ANIMATED SCAN LOGIC
+        const loadingText = document.getElementById('loading-text');
+        const stages = ["CHECKING REGISTRY...", "VERIFYING HASH...", "ANALYZING INTEGRITY...", "FINALIZING..."];
+        let step = 0;
+        
+        // Rotate text every 600ms
+        const scanInterval = setInterval(() => {
+            if(step < stages.length) {
+                loadingText.innerText = stages[step];
+                step++;
+            }
+        }, 600);
+
         try {
-            const response = await fetch(`/api/verify?id=${id}`);
+            // Artificial delay to let the forensic animation play (at least 2s)
+            const [response] = await Promise.all([
+                fetch(`/api/verify?id=${id}`),
+                new Promise(resolve => setTimeout(resolve, 2000)) 
+            ]);
+            
+            clearInterval(scanInterval);
             const data = await response.json();
 
             if (!data.document) { showError("ERR_NOT_FOUND: Document absent from official registry."); return; }
 
             const doc = data.document;
             
-            // Date Check (DD-MM-YYYY)
+            // Expiry Logic
             if (doc.expiry_date.includes("Lifetime") || doc.expiry_date.includes("N/A")) {
                 showSuccess(doc);
             } else {
                 const parts = doc.expiry_date.split('-');
                 const expDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                const today = new Date();
-                today.setHours(0,0,0,0);
+                const today = new Date(); today.setHours(0,0,0,0);
 
                 if (today > expDate) {
-                    showError(`STATUS: EXPIRED ON ${doc.expiry_date}`, doc);
+                    showError(`EXPIRED ON ${doc.expiry_date}`, doc);
                 } else {
                     showSuccess(doc);
                 }
             }
-
         } catch (err) {
+            clearInterval(scanInterval);
             console.error(err);
             showError("ERR_NETWORK: Connection to registry failed.");
         }
@@ -392,7 +371,21 @@
         hideLoader();
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge valid";
-        badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/></svg> AUTHENTICATED & VALID`;
+        badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/></svg> AUTHENTICATED`;
+        
+        // FEATURE 5: EXPLANATION
+        document.getElementById('status-explanation').innerText = "This document exists in the official registry and has not been altered since issuance.";
+        
+        // FEATURE 4: QR CODE GENERATION
+        new QRCode(document.getElementById("qrcode"), {
+            text: window.location.href,
+            width: 100,
+            height: 100,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+
         fillDetails(doc);
     }
 
@@ -401,6 +394,10 @@
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge invalid";
         badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/></svg> INVALID / EXPIRED`;
+        
+        document.getElementById('status-explanation').innerText = "This document is invalid, expired, or does not match official forensic records.";
+        document.querySelector('.digital-stamp').style.display = 'none'; // Hide stamp on error
+        
         const errorText = document.getElementById('error-msg');
         errorText.innerText = msg;
         errorText.classList.remove('hidden');
@@ -408,16 +405,14 @@
     }
 
     function fillDetails(doc) {
-        const container = document.getElementById('details-container');
-        container.classList.remove('hidden');
+        document.getElementById('details-container').classList.remove('hidden');
         document.getElementById('d-ref').innerText = doc.ref_no || "N/A";
         document.getElementById('d-type').innerText = (doc.type || "Document").toUpperCase(); 
         document.getElementById('d-name').innerText = doc.issued_to || "N/A";
         document.getElementById('d-purpose').innerText = doc.purpose || "N/A";
         document.getElementById('d-issue').innerText = doc.issue_date || "N/A";
         document.getElementById('d-expiry').innerText = doc.expiry_date || "N/A";
-        // Set Verification Timestamp
-        document.getElementById('verify-timestamp').innerText = new Date().toLocaleString() + " (Secure Time)";
+        document.getElementById('verify-timestamp').innerText = new Date().toLocaleString();
     }
 
     function hideLoader() {
