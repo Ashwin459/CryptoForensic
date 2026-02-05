@@ -28,6 +28,7 @@
             --trust-strip-bg: #f8f9fa;
             --trust-text: #666;
             --stamp-color: #b8860b;
+            --corp-text: #444;
         }
 
         :root[data-theme="dark"] {
@@ -45,6 +46,7 @@
             --trust-strip-bg: #1a1a1a;
             --trust-text: #888;
             --stamp-color: #ffd700;
+            --corp-text: #999;
         }
 
         /* --- GLOBAL TRANSITIONS --- */
@@ -144,7 +146,6 @@
             border: 1px solid var(--border-color);
             position: relative; overflow: hidden; margin-bottom: 25px;
         }
-        /* Tech Corners */
         .details-box::before, .details-box::after {
             content: ''; position: absolute; width: 8px; height: 8px;
             border: 1px solid var(--accent-gold); z-index: 2;
@@ -189,8 +190,32 @@
         }
         .copy-btn:hover { background: var(--bg-color); color: var(--accent-gold); border-color: var(--accent-gold); }
 
-        .footer { margin-top: 30px; text-align: center; font-size: 11px; color: var(--text-secondary); opacity: 0.7; }
-       
+        /* --- NEW: CORPORATE FOOTER SECTION --- */
+        .corporate-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--corp-text);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+        .corp-name { font-weight: 700; font-size: 12px; text-transform: uppercase; color: var(--text-primary); margin-bottom: 4px; }
+        .corp-cin { font-family: 'Consolas', monospace; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .corp-address { margin-bottom: 12px; opacity: 0.9; }
+        
+        /* Contact Grid */
+        .contact-grid {
+            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
+            background: rgba(128, 128, 128, 0.05);
+            padding: 8px; border-radius: 4px; border: 1px solid var(--border-color);
+        }
+        .contact-item { display: flex; align-items: center; gap: 5px; font-weight: 600; color: var(--text-secondary); }
+        .contact-item a { color: inherit; text-decoration: none; transition: color 0.2s; }
+        .contact-item a:hover { color: var(--accent-gold); }
+
+        .app-footer { margin-top: 20px; text-align: center; font-size: 10px; color: var(--text-secondary); opacity: 0.6; }
+        .easter-egg { font-size: 8px; opacity: 0.1; margin-top: 5px; color: var(--text-primary); }
         .hidden { display: none !important; }
 
         /* Mobile Adjustments */
@@ -199,17 +224,19 @@
             .label { color: var(--accent-gold); font-size: 11px; }
             .value { text-align: left; }
             .trust-strip { font-size: 9px; gap: 10px; }
+            .contact-grid { flex-direction: column; gap: 8px; }
         }
 
         /* Print Styles */
         @media print {
-            .theme-toggle-btn, .footer, .copy-btn { display: none; }
+            .theme-toggle-btn, .app-footer, .copy-btn { display: none; }
             body { background: white; }
             .card { box-shadow: none; border: 2px solid #000; }
             .trust-strip { background: none; border-bottom: 1px solid #000; color: #000; }
             .status-badge { border: 2px solid #000; color: #000; background: none; }
             .details-box { border: 1px solid #000; }
             .digital-stamp { opacity: 0.2; color: #000; border-color: #000; }
+            .contact-grid { border: 1px solid #000; background: none; }
         }
     </style>
 </head>
@@ -262,9 +289,21 @@
             <div id="error-msg" class="hidden" style="margin-top: 25px; text-align: center; color: var(--accent-red); font-weight: 700;"></div>
         </div>
 
-        <div class="footer">
+        <div class="corporate-footer">
+            <div class="corp-name">Legal Data Forensic Private Limited</div>
+            <div class="corp-cin">CIN: U62099PN2026PTC251352</div>
+            <div class="corp-address">Chhatrapati Square, Nagpur, Maharashtra</div>
+            
+            <div class="contact-grid">
+                <div class="contact-item">📞 +91 7773900082</div>
+                <div class="contact-item">✉️ <a href="mailto:contact@ldf.co">contact@ldf.co</a></div>
+                <div class="contact-item">🌐 <a href="http://www.ldf.co" target="_blank">www.ldf.co</a></div>
+            </div>
+        </div>
+
+        <div class="app-footer">
             <p>SECURE FORENSIC DATA SYSTEM © 2026</p>
-           
+            <p class="easter-egg">Made by Ashwin and Laxmikant</p>
         </div>
     </div>
 </div>
