@@ -270,7 +270,7 @@
             </div>
 
             <div id="details-container" class="hidden details-box">
-                <div class="digital-stamp">✔ VERIFIED<br><span style="font-size:12px; border:none;">LEGAL DATA FORENSIC</span></div>
+                <div class="digital-stamp" id="valid-stamp">✔ VERIFIED<br><span style="font-size:12px; border:none;">LEGAL DATA FORENSIC</span></div>
 
                 <div class="detail-row"><span class="label">Reference ID</span> <span class="value" id="d-ref"></span></div>
                 <div class="detail-row"><span class="label">Credential Type</span> <span class="value" id="d-type" style="color: var(--accent-gold);"></span></div>
@@ -375,11 +375,13 @@
             
             // --- UPDATED STATUS LOGIC ---
             if (data.status === "VALID") {
-                showSuccess(doc); // Shows "VERIFIED"
+                showSuccess(doc); 
+            } else if (data.status === "REVOKED") {
+                showRevoked(doc, data.message); // NEW FUNCTION FOR REVOKED
             } else if (data.status === "EXPIRED") {
-                showError("EXPIRED", data.message, doc); // Shows "EXPIRED"
+                showError("EXPIRED", data.message, doc);
             } else {
-                showError("NOT VERIFIED", data.message, doc); // Fallback for any other issue
+                showError("NOT VERIFIED", data.message, doc); 
             }
 
         } catch (err) {
@@ -393,24 +395,46 @@
         hideLoader();
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge valid";
-        // CHANGED TO 'VERIFIED'
         badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/></svg> VERIFIED`;
         document.getElementById('status-explanation').innerText = "This document exists in the official registry and has not been altered since issuance.";
+        document.getElementById('valid-stamp').style.display = 'block'; // Ensure stamp is visible
         fillDetails(doc);
     }
 
-    // UPDATED FUNCTION SIGNATURE TO ACCEPT BADGE TEXT
+    function showRevoked(doc, msg) {
+        hideLoader();
+        const badge = document.getElementById('status-badge');
+        badge.className = "status-badge invalid";
+        badge.style.borderColor = "#c70000";
+        badge.style.color = "#c70000";
+        badge.style.backgroundColor = "rgba(199, 0, 0, 0.1)";
+        
+        badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/></svg> REVOKED`;
+        
+        document.getElementById('status-explanation').innerText = "WARNING: This document has been officially cancelled by the issuing authority and is no longer valid.";
+        document.getElementById('status-explanation').style.color = "#c70000";
+        document.getElementById('status-explanation').style.fontWeight = "bold";
+
+        document.getElementById('valid-stamp').style.display = 'none'; // Hide Verified Stamp
+        
+        fillDetails(doc);
+        
+        // Visual indicator on details
+        document.getElementById('details-container').style.borderColor = "#c70000";
+    }
+
     function showError(badgeText, msg, doc = null) {
         hideLoader();
         const badge = document.getElementById('status-badge');
         badge.className = "status-badge invalid";
-        // DYNAMIC BADGE TEXT (EXPIRED / NOT VERIFIED)
         badge.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/></svg> ${badgeText}`;
         document.getElementById('status-explanation').innerText = "This document is invalid, expired, or does not match official forensic records.";
-        document.querySelector('.digital-stamp').style.display = 'none'; 
+        document.getElementById('valid-stamp').style.display = 'none'; 
+        
         const errorText = document.getElementById('error-msg');
         errorText.innerText = msg;
         errorText.classList.remove('hidden');
+        
         if (doc) fillDetails(doc);
     }
 
