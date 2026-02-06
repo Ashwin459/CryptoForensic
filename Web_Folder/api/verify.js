@@ -68,23 +68,33 @@ export default async function handler(req, res) {
             return res.status(404).json({ error: "Document not found in registry" });
         }
 
-        // --- SECURITY CHECK 2: SERVER-SIDE EXPIRY ---
         let status = "VALID";
         let message = "Document is active and authentic.";
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Normalize today to midnight
+        
+        // --- NEW SECURITY CHECK: REVOCATION STATUS ---
+        // This takes precedence over expiry. If revoked, it is invalid immediately.
+        if (doc.revoked === true) {
+            status = "REVOKED";
+            message = "This document has been officially REVOKED by the issuer.";
+        }
+        else {
+            // --- SECURITY CHECK 2: SERVER-SIDE EXPIRY ---
+            // Only check expiry if the document is NOT revoked
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Normalize today to midnight
 
-        // Check if expiry is NOT "Lifetime" and NOT "N/A"
-        if (doc.expiry_date && !doc.expiry_date.includes("Lifetime") && !doc.expiry_date.includes("N/A")) {
-            // Parse "DD-MM-YYYY" from the database
-            const parts = doc.expiry_date.split('-');
-            if (parts.length === 3) {
-                // new Date(year, monthIndex, day)
-                const expDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                
-                if (today > expDate) {
-                    status = "EXPIRED";
-                    message = `This document expired on ${doc.expiry_date}`;
+            // Check if expiry is NOT "Lifetime" and NOT "N/A"
+            if (doc.expiry_date && !doc.expiry_date.includes("Lifetime") && !doc.expiry_date.includes("N/A")) {
+                // Parse "DD-MM-YYYY" from the database
+                const parts = doc.expiry_date.split('-');
+                if (parts.length === 3) {
+                    // new Date(year, monthIndex, day)
+                    const expDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    
+                    if (today > expDate) {
+                        status = "EXPIRED";
+                        message = `This document expired on ${doc.expiry_date}`;
+                    }
                 }
             }
         }
@@ -95,20 +105,20 @@ export default async function handler(req, res) {
         const integrityHash = crypto.createHash('sha256').update(recordString).digest('hex');
 
         // --- SECURITY CHECK 4: AUDIT LOGGING ---
-        // Log the successful lookup (even if expired, we log that it was found)
+        // Log the successful lookup (valid, expired, or revoked)
         await logs.insertOne({
             timestamp: new Date(),
             ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
             document_ref: doc.ref_no,
-            result_status: status, // Logs "VALID" or "EXPIRED"
+            result_status: status, // Logs "VALID", "EXPIRED", or "REVOKED"
             user_agent: req.headers['user-agent']
         });
 
         // 5. Return Response (Backend is the Authority)
         return res.status(200).json({
-            status: status,       // Frontend blindly obeys this
-            message: message,     // Frontend displays this
-            integrity_hash: integrityHash, // Proof of integrity
+            status: status,       // Frontend obeys this ("VALID", "REVOKED", "EXPIRED")
+            message: message,     
+            integrity_hash: integrityHash,
             document: {
                 ref_no: doc.ref_no,
                 type: doc.type || "Document",
